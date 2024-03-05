@@ -10,9 +10,9 @@ const typeDefs = gql`
     text: String
     author: User
   }
-
-  type Query {
+  type Query { # type Query: get
     allTweets: [Tweet]
+    tweet(id: ID): Tweet
   }
 `;
 
