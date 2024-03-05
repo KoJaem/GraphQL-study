@@ -4,10 +4,12 @@ let tweets = [
   {
     id: "1",
     text: "first one!",
+    userId: "2",
   },
   {
     id: "2",
     text: "second one",
+    userId: "1",
   },
 ];
 
@@ -62,9 +64,13 @@ const resolvers = {
   },
   Mutation: {
     postTweet(_, { text, userId }) {
+      console.log(users.find(user => user.id === userId)),
+        users.find(user => user.id === userId);
+      if(!users.find(user => user.id === userId)) throw new Error(`User ID ${userId} is not found!`);
       const newTweet = {
         id: tweets.length + 1,
         text,
+        userId,
       };
       tweets.push(newTweet);
       return newTweet;
@@ -79,6 +85,11 @@ const resolvers = {
   User: {
     fullName({ firstName, lastName }) {
       return `${firstName} ${lastName}`;
+    },
+  },
+  Tweet: {
+    author({ userId }) {
+      return users.find(user => user.id === userId);
     },
   },
 };
