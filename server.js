@@ -1,4 +1,5 @@
 import { ApolloServer, gql } from "apollo-server";
+import fetch from "node-fetch";
 
 let tweets = [
   {
@@ -45,9 +46,11 @@ const typeDefs = gql`
     author: User
   }
   type Query { # type Query: get
+    allMovies: [Movie!]!
     allUsers: [User!]!
     allTweets: [Tweet!]!
     tweet(id: ID!): Tweet
+    movie(id: String!): Movie
   }
   type Mutation { # type Mutation: post, put, delete
     postTweet(text: String!, userId: ID!): Tweet!
@@ -55,6 +58,29 @@ const typeDefs = gql`
     Deletes a Tweet if found, else returns false
     """
     deleteTweet(id: ID!): Boolean!
+  }
+  type Movie {
+    id: Int!
+    url: String!
+    imdb_code: String!
+    title: String!
+    title_english: String!
+    title_long: String!
+    slug: String!
+    year: Int!
+    rating: Float!
+    runtime: Float!
+    genres: [String]!
+    summary: String
+    description_full: String!
+    synopsis: String
+    yt_trailer_code: String!
+    language: String!
+    background_image: String!
+    background_image_original: String!
+    small_cover_image: String!
+    medium_cover_image: String!
+    large_cover_image: String!
   }
 `;
 
@@ -70,13 +96,21 @@ const resolvers = {
       console.log("allUsers called!");
       return users;
     },
+    allMovies() {
+      return fetch("https://yts.mx/api/v2/list_movies.json")
+        .then(r => r.json())
+        .then(json => json.data.movies);
+    },
+    movie(_, { id }) {
+      return fetch(`https://yts.mx/api/v2/movie_details.json?movie_id=${id}`)
+        .then(r => r.json())
+        .then(json => json.data.movie);
+    },
   },
   Mutation: {
     postTweet(_, { text, userId }) {
-      console.log(users.find(user => user.id === userId)),
-        users.find(user => user.id === userId);
-      if (!users.find(user => user.id === userId))
-        throw new Error(`User ID ${userId} is not found!`);
+      // if (!users.find(user => user.id === userId))
+      //   throw new Error(`User ID ${userId} is not found!`);
       const newTweet = {
         id: tweets.length + 1,
         text,
