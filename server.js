@@ -31,8 +31,14 @@ const typeDefs = gql`
     id: ID!
     firstName: String!
     lastName: String!
+    """
+    Is the sum of firstName + lastName as a string
+    """
     fullName: String!
   }
+  """
+  Tweet object represents a resource for a Tweet
+  """
   type Tweet {
     id: ID!
     text: String!
@@ -45,6 +51,9 @@ const typeDefs = gql`
   }
   type Mutation { # type Mutation: post, put, delete
     postTweet(text: String!, userId: ID!): Tweet!
+    """
+    Deletes a Tweet if found, else returns false
+    """
     deleteTweet(id: ID!): Boolean!
   }
 `;
@@ -66,7 +75,8 @@ const resolvers = {
     postTweet(_, { text, userId }) {
       console.log(users.find(user => user.id === userId)),
         users.find(user => user.id === userId);
-      if(!users.find(user => user.id === userId)) throw new Error(`User ID ${userId} is not found!`);
+      if (!users.find(user => user.id === userId))
+        throw new Error(`User ID ${userId} is not found!`);
       const newTweet = {
         id: tweets.length + 1,
         text,
